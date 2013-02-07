@@ -16,16 +16,21 @@
  */
 package org.apache.accumulo.core.iterators.user;
 
+import com.texeltek.accumulocloudbaseshim.SortedKeyValueIteratorShim;
 import org.apache.accumulo.core.data.Key;
 import org.apache.accumulo.core.data.Value;
-import org.apache.accumulo.core.iterators.SortedKeyValueIterator;
 
 import java.io.IOException;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-public class WholeRowIterator implements SortedKeyValueIterator {
+public class WholeRowIterator extends SortedKeyValueIteratorShim {
+
+    public WholeRowIterator(cloudbase.core.iterators.WholeRowIterator impl) {
+        super(impl);
+    }
+
     public static SortedMap<Key, Value> decodeRow(Key rowKey, Value rowValue) throws IOException {
         SortedMap<Key, Value> result = new TreeMap<Key, Value>();
         SortedMap<cloudbase.core.data.Key, cloudbase.core.data.Value> decoded =

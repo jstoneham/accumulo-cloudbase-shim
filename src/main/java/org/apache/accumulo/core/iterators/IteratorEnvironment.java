@@ -14,15 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.accumulo.core.iterators.user;
+package org.apache.accumulo.core.iterators;
 
-import org.apache.accumulo.core.iterators.Filter;
+import org.apache.accumulo.core.conf.AccumuloConfiguration;
+import org.apache.accumulo.core.data.Key;
+import org.apache.accumulo.core.data.Value;
+import org.apache.accumulo.core.iterators.IteratorUtil.IteratorScope;
 
-public class RegExFilter implements Filter {
-    public static final String ROW_REGEX = "rowRegex";
-    public static final String COLF_REGEX = "colfRegex";
-    public static final String COLQ_REGEX = "colqRegex";
-    public static final String VALUE_REGEX = "valueRegex";
-    public static final String OR_FIELDS = "orFields";
-    public static final String ENCODING = "encoding";
+import java.io.IOException;
+
+public interface IteratorEnvironment {
+
+    SortedKeyValueIterator<Key, Value> reserveMapFileReader(String mapFileName) throws IOException;
+
+    AccumuloConfiguration getConfig();
+
+    IteratorScope getIteratorScope();
+
+    boolean isFullMajorCompaction();
+
+    void registerSideChannel(SortedKeyValueIterator<Key, Value> iter);
 }

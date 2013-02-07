@@ -14,15 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.accumulo.core.iterators.user;
+package com.texeltek.accumulocloudbaseshim;
 
-import org.apache.accumulo.core.iterators.Filter;
+import org.apache.accumulo.core.conf.AccumuloConfiguration;
+import org.apache.accumulo.core.conf.Property;
 
-public class RegExFilter implements Filter {
-    public static final String ROW_REGEX = "rowRegex";
-    public static final String COLF_REGEX = "colfRegex";
-    public static final String COLQ_REGEX = "colqRegex";
-    public static final String VALUE_REGEX = "valueRegex";
-    public static final String OR_FIELDS = "orFields";
-    public static final String ENCODING = "encoding";
+import java.util.Iterator;
+import java.util.Map;
+
+public class AccumuloConfigurationShim extends AccumuloConfiguration {
+
+    public AccumuloConfigurationShim(cloudbase.core.conf.CBConfiguration impl) {
+        super(impl);
+    }
+
+    @Override
+    public String get(Property property) {
+        return impl.get(cloudbaseProperty(property));
+    }
+
+    @Override
+    public Iterator<Map.Entry<String, String>> iterator() {
+        return impl.iterator();
+    }
 }

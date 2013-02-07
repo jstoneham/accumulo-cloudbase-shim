@@ -16,7 +16,11 @@
  */
 package org.apache.accumulo.core.iterators.user;
 
-import org.apache.accumulo.core.iterators.SortedKeyValueIterator;
+import com.texeltek.accumulocloudbaseshim.SortedKeyValueIteratorShim;
 
-public class VersioningIterator implements SortedKeyValueIterator {
+public class VersioningIterator extends SortedKeyValueIteratorShim {
+
+    public VersioningIterator(cloudbase.core.iterators.VersioningIterator impl) {
+        super(impl);
+    }
 }

@@ -14,15 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.accumulo.core.iterators.user;
+package org.apache.accumulo.core.iterators;
 
-import org.apache.accumulo.core.iterators.Filter;
-
-public class RegExFilter implements Filter {
-    public static final String ROW_REGEX = "rowRegex";
-    public static final String COLF_REGEX = "colfRegex";
-    public static final String COLQ_REGEX = "colqRegex";
-    public static final String VALUE_REGEX = "valueRegex";
-    public static final String OR_FIELDS = "orFields";
-    public static final String ENCODING = "encoding";
+public interface Filter {
 }

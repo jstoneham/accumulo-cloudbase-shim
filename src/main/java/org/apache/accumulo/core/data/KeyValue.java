@@ -14,30 +14,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.accumulo.core.iterators;
+package org.apache.accumulo.core.data;
 
-import org.apache.accumulo.core.data.ByteSequence;
-import org.apache.accumulo.core.data.Range;
-import org.apache.hadoop.io.Writable;
-import org.apache.hadoop.io.WritableComparable;
-
-import java.io.IOException;
-import java.util.Collection;
+import java.nio.ByteBuffer;
 import java.util.Map;
 
-public interface SortedKeyValueIterator<K extends WritableComparable<?>, V extends Writable> {
+public class KeyValue implements Map.Entry<Key, Value> {
 
-    void init(SortedKeyValueIterator<K, V> source, Map<String, String> options, IteratorEnvironment env) throws IOException;
+    public final cloudbase.core.data.KeyValue impl;
 
-    boolean hasTop();
+    public KeyValue(Key key, byte[] value) {
+        this.impl = new cloudbase.core.data.KeyValue(key.impl, value);
+    }
 
-    void next() throws IOException;
+    public KeyValue(Key key, ByteBuffer value) {
+        this.impl = new cloudbase.core.data.KeyValue(key.impl, value.array());
+    }
 
-    void seek(Range range, Collection<ByteSequence> columnFamilies, boolean inclusive) throws IOException;
+    @Override
+    public Key getKey() {
+        return new Key(impl.getKey());
+    }
 
-    K getTopKey();
+    @Override
+    public Value getValue() {
+        return new Value(impl.getValue());
+    }
 
-    V getTopValue();
+    @Override
+    public Value setValue(Value value) {
+        return new Value(impl.setValue(value.impl));
+    }
 
-    SortedKeyValueIterator<K, V> deepCopy(IteratorEnvironment env);
+    public String toString() {
+        return impl.toString();
+    }
 }

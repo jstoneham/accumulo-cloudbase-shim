@@ -16,7 +16,10 @@
  */
 package org.apache.accumulo.core;
 
+import org.apache.accumulo.core.security.Authorizations;
+
 public class Constants {
     public static final String VERSION = "1.3.7";
     public static final int MAX_DATA_TO_PRINT = 64;
+    public static final Authorizations NO_AUTHS = new Authorizations();
 }

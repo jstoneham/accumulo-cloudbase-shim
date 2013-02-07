@@ -16,7 +16,7 @@
  */
 package org.apache.accumulo.core.iterators.user;
 
-import org.apache.accumulo.core.iterators.SortedKeyValueIterator;
+import org.apache.accumulo.core.iterators.Filter;
 
-public class ColumnAgeOffFilter implements SortedKeyValueIterator {
+public class ColumnAgeOffFilter implements Filter {
 }

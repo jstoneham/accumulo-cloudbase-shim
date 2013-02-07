@@ -18,6 +18,7 @@ package com.texeltek.accumulocloudbaseshim;
 
 import org.apache.accumulo.core.client.IteratorSetting;
 import org.apache.accumulo.core.client.ScannerBase;
+import org.apache.accumulo.core.iterators.SortedKeyIterator;
 import org.apache.accumulo.core.iterators.user.AgeOffFilter;
 import org.apache.accumulo.core.iterators.user.ColumnAgeOffFilter;
 import org.apache.accumulo.core.iterators.user.RegExFilter;
@@ -73,14 +74,25 @@ public abstract class ScannerShimBase implements ScannerBase {
     }
 
     private void translateCloudbaseIterator(IteratorSetting cfg) throws IOException {
-        String prefix = "org.apache.accumulo.core.iterators.user";
-        if (cfg.getIteratorClass().startsWith(prefix)) {
-            cfg.setIteratorClass("cloudbase.core.iterators" + cfg.getIteratorClass().substring(prefix.length()));
-        }
+        translateIteratorsUserPackage(cfg);
+        translateIteratorsPackage(cfg);
 
         baseImpl.setScanIterators(cfg.getPriority(), cfg.getIteratorClass(), cfg.getName());
         for (Map.Entry<String, String> option : cfg.getOptions().entrySet()) {
             baseImpl.setScanIteratorOption(cfg.getName(), option.getKey(), option.getValue());
+        }
+    }
+
+    private void translateIteratorsUserPackage(IteratorSetting cfg) {
+        final String prefix = "org.apache.accumulo.core.iterators.user";
+        if (cfg.getIteratorClass().startsWith(prefix)) {
+            cfg.setIteratorClass("cloudbase.core.iterators" + cfg.getIteratorClass().substring(prefix.length()));
+        }
+    }
+
+    private void translateIteratorsPackage(IteratorSetting cfg) {
+        if (cfg.getIteratorClass().equals(SortedKeyIterator.class.getName())) {
+            cfg.setIteratorClass(cloudbase.core.iterators.SortedKeyIterator.class.getName());
         }
     }
 

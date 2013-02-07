@@ -135,8 +135,16 @@ public class Key implements WritableComparable<Key>, Cloneable {
         return impl.getRow();
     }
 
+    ByteSequence getRowData() {
+        return new ArrayByteSequence(impl.getRowData());
+    }
+
     public int compareRow(Text r) {
         return impl.compareRow(r);
+    }
+
+    public ByteSequence getColumnFamilyData() {
+        return new ArrayByteSequence(impl.getColumnFamilyData());
     }
 
     public Text getColumnFamily(Text cf) {
@@ -149,6 +157,10 @@ public class Key implements WritableComparable<Key>, Cloneable {
 
     public int compareColumnFamily(Text cf) {
         return impl.compareColumnFamily(cf);
+    }
+
+    public ByteSequence getColumnQualifierData() {
+        return new ArrayByteSequence(impl.getColumnQualifierData());
     }
 
     public Text getColumnQualifier(Text cq) {
@@ -177,6 +189,10 @@ public class Key implements WritableComparable<Key>, Cloneable {
 
     public void setDeleted(boolean deleted) {
         impl.setDeleted(deleted);
+    }
+
+    public ByteSequence getColumnVisibilityData() {
+        return new ArrayByteSequence(impl.getColumnVisibilityData());
     }
 
     public final Text getColumnVisibility() {

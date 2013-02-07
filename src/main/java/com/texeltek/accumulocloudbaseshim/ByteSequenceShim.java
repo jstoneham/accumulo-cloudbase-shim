@@ -14,30 +14,48 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.accumulo.core.iterators;
+package com.texeltek.accumulocloudbaseshim;
 
 import org.apache.accumulo.core.data.ByteSequence;
-import org.apache.accumulo.core.data.Range;
-import org.apache.hadoop.io.Writable;
-import org.apache.hadoop.io.WritableComparable;
 
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Map;
+public class ByteSequenceShim extends ByteSequence {
 
-public interface SortedKeyValueIterator<K extends WritableComparable<?>, V extends Writable> {
+    public ByteSequenceShim(cloudbase.core.data.ByteSequence impl) {
+        super(impl);
+    }
 
-    void init(SortedKeyValueIterator<K, V> source, Map<String, String> options, IteratorEnvironment env) throws IOException;
+    @Override
+    public byte byteAt(int i) {
+        return impl.byteAt(i);
+    }
 
-    boolean hasTop();
+    @Override
+    public int length() {
+        return impl.length();
+    }
 
-    void next() throws IOException;
+    @Override
+    public ByteSequence subSequence(int i, int i1) {
+        return new ByteSequenceShim(impl.subSequence(i, i1));
+    }
 
-    void seek(Range range, Collection<ByteSequence> columnFamilies, boolean inclusive) throws IOException;
+    @Override
+    public byte[] toArray() {
+        return impl.toArray();
+    }
 
-    K getTopKey();
+    @Override
+    public boolean isBackedByArray() {
+        return impl.isBackedByArray();
+    }
 
-    V getTopValue();
+    @Override
+    public byte[] getBackingArray() {
+        return impl.getBackingArray();
+    }
 
-    SortedKeyValueIterator<K, V> deepCopy(IteratorEnvironment env);
+    @Override
+    public int offset() {
+        return impl.offset();
+    }
 }
