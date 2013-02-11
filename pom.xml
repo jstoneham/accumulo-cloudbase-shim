@@ -10,8 +10,8 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
     <scm>
-        <connection>scm:git:ssh://git@github.com:texeltek/accumulo-cloudbase-shim.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com:texeltek/accumulo-cloudbase-shim.git</developerConnection>
+        <connection>scm:git:ssh://git@github.com/texeltek/accumulo-cloudbase-shim.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/texeltek/accumulo-cloudbase-shim.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
     <dependencies>
