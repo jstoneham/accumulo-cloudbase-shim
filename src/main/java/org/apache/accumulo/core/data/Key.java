@@ -135,7 +135,7 @@ public class Key implements WritableComparable<Key>, Cloneable {
         return impl.getRow();
     }
 
-    ByteSequence getRowData() {
+    public ByteSequence getRowData() {
         return new ArrayByteSequence(impl.getRowData());
     }
 
