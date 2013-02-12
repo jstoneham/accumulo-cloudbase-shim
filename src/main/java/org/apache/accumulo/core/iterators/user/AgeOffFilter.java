@@ -16,6 +16,7 @@
  */
 package org.apache.accumulo.core.iterators.user;
 
+import org.apache.accumulo.core.client.IteratorSetting;
 import org.apache.accumulo.core.data.Key;
 import org.apache.accumulo.core.data.Value;
 import org.apache.accumulo.core.iterators.Filter;
@@ -28,6 +29,8 @@ import java.util.Map;
 public class AgeOffFilter extends Filter {
 
     public final cloudbase.core.iterators.filter.AgeOffFilter impl;
+    private static final String TTL = "ttl";
+    private static final String CURRENT_TIME = "currentTime";
 
     public AgeOffFilter() {
         super(new cloudbase.core.iterators.filter.AgeOffFilter());
@@ -57,5 +60,13 @@ public class AgeOffFilter extends Filter {
     @Override
     public boolean validateOptions(Map<String, String> options) {
         return impl.validateOptions(options);
+    }
+
+    public static void setTTL(IteratorSetting is, Long ttl) {
+        is.addOption(TTL, Long.toString(ttl));
+    }
+
+    public static void setCurrentTime(IteratorSetting is, Long currentTime) {
+        is.addOption(CURRENT_TIME, Long.toString(currentTime));
     }
 }

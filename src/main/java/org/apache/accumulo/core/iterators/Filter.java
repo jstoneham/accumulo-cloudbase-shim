@@ -59,7 +59,7 @@ public abstract class Filter extends WrappingIterator implements OptionDescriber
 
     @Override
     public void init(SortedKeyValueIterator<Key, Value> source, Map<String, String> options, IteratorEnvironment env) throws IOException {
-        throw new UnsupportedOperationException();
+        impl.init(options);
     }
 
     @Override

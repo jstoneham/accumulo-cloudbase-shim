@@ -16,6 +16,7 @@
  */
 package org.apache.accumulo.core.iterators.user;
 
+import org.apache.accumulo.core.client.IteratorSetting;
 import org.apache.accumulo.core.data.Key;
 import org.apache.accumulo.core.data.Value;
 import org.apache.accumulo.core.iterators.Filter;
@@ -63,5 +64,25 @@ public class RegExFilter extends Filter {
     @Override
     public boolean validateOptions(Map<String, String> options) {
         return impl.validateOptions(options);
+    }
+
+    public static void setRegexs(IteratorSetting si, String rowTerm, String cfTerm, String cqTerm, String valueTerm, boolean orFields) {
+        if (rowTerm != null)
+            si.addOption(RegExFilter.ROW_REGEX, rowTerm);
+        if (cfTerm != null)
+            si.addOption(RegExFilter.COLF_REGEX, cfTerm);
+        if (cqTerm != null)
+            si.addOption(RegExFilter.COLQ_REGEX, cqTerm);
+        if (valueTerm != null)
+            si.addOption(RegExFilter.VALUE_REGEX, valueTerm);
+        if (orFields) {
+            si.addOption(RegExFilter.OR_FIELDS, "true");
+        }
+    }
+
+    public static void setEncoding(IteratorSetting si, String encoding) {
+        if (!encoding.isEmpty()) {
+            si.addOption(RegExFilter.ENCODING, encoding);
+        }
     }
 }
