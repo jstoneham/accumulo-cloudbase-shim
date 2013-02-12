@@ -32,7 +32,7 @@ public abstract class Filter extends WrappingIterator implements OptionDescriber
 
     public Filter() {
         super();
-        this.impl = null;
+        this.impl = new CloudbaseEmptyFilter();
     }
 
     public Filter(cloudbase.core.iterators.filter.Filter impl) {
@@ -74,5 +74,19 @@ public abstract class Filter extends WrappingIterator implements OptionDescriber
 
     public static void setNegate(IteratorSetting is, boolean negate) {
         throw new UnsupportedOperationException();
+    }
+
+    private class CloudbaseEmptyFilter implements cloudbase.core.iterators.filter.Filter {
+        public CloudbaseEmptyFilter() {
+        }
+
+        @Override
+        public void init(Map<String, String> stringStringMap) {
+        }
+
+        @Override
+        public boolean accept(cloudbase.core.data.Key key, cloudbase.core.data.Value value) {
+            return false;
+        }
     }
 }
