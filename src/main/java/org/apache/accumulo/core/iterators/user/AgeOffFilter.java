@@ -16,7 +16,46 @@
  */
 package org.apache.accumulo.core.iterators.user;
 
+import org.apache.accumulo.core.data.Key;
+import org.apache.accumulo.core.data.Value;
 import org.apache.accumulo.core.iterators.Filter;
+import org.apache.accumulo.core.iterators.IteratorEnvironment;
+import org.apache.accumulo.core.iterators.SortedKeyValueIterator;
 
-public class AgeOffFilter implements Filter {
+import java.io.IOException;
+import java.util.Map;
+
+public class AgeOffFilter extends Filter {
+
+    public final cloudbase.core.iterators.filter.AgeOffFilter impl;
+
+    public AgeOffFilter() {
+        super(new cloudbase.core.iterators.filter.AgeOffFilter());
+        this.impl = (cloudbase.core.iterators.filter.AgeOffFilter) super.impl;
+    }
+
+    public AgeOffFilter(cloudbase.core.iterators.filter.AgeOffFilter impl) {
+        super(impl);
+        this.impl = impl;
+    }
+
+    @Override
+    public void init(SortedKeyValueIterator<Key, Value> source, Map<String, String> options, IteratorEnvironment env) throws IOException {
+        impl.init(options);
+    }
+
+    @Override
+    public boolean accept(Key k, Value v) {
+        return impl.accept(k.impl, v.impl);
+    }
+
+    @Override
+    public IteratorOptions describeOptions() {
+        return new IteratorOptions(impl.describeOptions());
+    }
+
+    @Override
+    public boolean validateOptions(Map<String, String> options) {
+        return impl.validateOptions(options);
+    }
 }

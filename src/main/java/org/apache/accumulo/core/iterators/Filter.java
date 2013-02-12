@@ -16,5 +16,63 @@
  */
 package org.apache.accumulo.core.iterators;
 
-public interface Filter {
+import org.apache.accumulo.core.client.IteratorSetting;
+import org.apache.accumulo.core.data.ByteSequence;
+import org.apache.accumulo.core.data.Key;
+import org.apache.accumulo.core.data.Range;
+import org.apache.accumulo.core.data.Value;
+
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Map;
+
+public abstract class Filter extends WrappingIterator implements OptionDescriber {
+
+    public final cloudbase.core.iterators.filter.Filter impl;
+
+    public Filter() {
+        super();
+        this.impl = null;
+    }
+
+    public Filter(cloudbase.core.iterators.filter.Filter impl) {
+        super(null);
+        this.impl = impl;
+    }
+
+    @Override
+    public SortedKeyValueIterator<Key, Value> deepCopy(IteratorEnvironment env) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void next() throws IOException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void seek(Range range, Collection<ByteSequence> columnFamilies, boolean inclusive) throws IOException {
+        throw new UnsupportedOperationException();
+    }
+
+    public abstract boolean accept(Key k, Value v);
+
+    @Override
+    public void init(SortedKeyValueIterator<Key, Value> source, Map<String, String> options, IteratorEnvironment env) throws IOException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public IteratorOptions describeOptions() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean validateOptions(Map<String, String> options) {
+        throw new UnsupportedOperationException();
+    }
+
+    public static void setNegate(IteratorSetting is, boolean negate) {
+        throw new UnsupportedOperationException();
+    }
 }

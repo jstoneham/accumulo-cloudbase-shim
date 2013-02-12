@@ -20,6 +20,10 @@ import com.texeltek.accumulocloudbaseshim.SortedKeyValueIteratorShim;
 
 public abstract class WrappingIterator extends SortedKeyValueIteratorShim {
 
+    public WrappingIterator() {
+        super(null);
+    }
+
     public WrappingIterator(cloudbase.core.iterators.WrappingIterator impl) {
         super(impl);
     }
