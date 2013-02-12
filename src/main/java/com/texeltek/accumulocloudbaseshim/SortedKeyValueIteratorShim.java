@@ -53,6 +53,7 @@ public class SortedKeyValueIteratorShim implements SortedKeyValueIterator<Key, V
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void seek(Range range, Collection<ByteSequence> columnFamilies, boolean inclusive) throws IOException {
         impl.seek(range.impl,
                 CollectionUtils.collect(columnFamilies, new Transformer() {
