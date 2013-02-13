@@ -16,12 +16,19 @@
  */
 package org.apache.accumulo.core.client.mapreduce;
 
-import cloudbase.core.client.mapreduce.CloudbaseInputFormat;
+import cloudbase.core.client.mapreduce.CloudbaseInputFormatShim;
+import com.texeltek.accumulocloudbaseshim.InstanceShim;
 import com.texeltek.accumulocloudbaseshim.JobContextShim;
+import com.texeltek.accumulocloudbaseshim.TabletLocatorShim;
+import org.apache.accumulo.core.client.Instance;
 import org.apache.accumulo.core.client.IteratorSetting;
+import org.apache.accumulo.core.client.TableNotFoundException;
+import org.apache.accumulo.core.client.impl.TabletLocator;
 import org.apache.accumulo.core.data.Range;
 import org.apache.accumulo.core.security.Authorizations;
 import org.apache.accumulo.core.util.Pair;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Transformer;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.InputFormat;
@@ -29,27 +36,24 @@ import org.apache.hadoop.mapreduce.JobContext;
 import org.apache.log4j.Level;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public abstract class InputFormatBase<K, V> extends InputFormat<K, V> {
 
     public static void setIsolated(Configuration conf, boolean enable) {
-        CloudbaseInputFormat.setIsolated(new JobContextShim(conf), enable);
+        CloudbaseInputFormatShim.setIsolated(new JobContextShim(conf), enable);
     }
 
     public static void setInputInfo(Configuration conf, String user, byte[] passwd, String table, Authorizations auths) {
-        CloudbaseInputFormat.setInputInfo(new JobContextShim(conf), user, passwd, table, auths.impl);
+        CloudbaseInputFormatShim.setInputInfo(new JobContextShim(conf), user, passwd, table, auths.impl);
     }
 
     public static void setZooKeeperInstance(Configuration conf, String instanceName, String zooKeepers) {
-        CloudbaseInputFormat.setZooKeeperInstance(new JobContextShim(conf), instanceName, zooKeepers);
+        CloudbaseInputFormatShim.setZooKeeperInstance(new JobContextShim(conf), instanceName, zooKeepers);
     }
 
     public static void setMockInstance(Configuration conf, String instanceName) {
-        CloudbaseInputFormat.setMockInstance(new JobContextShim(conf), instanceName);
+        CloudbaseInputFormatShim.setMockInstance(new JobContextShim(conf), instanceName);
     }
 
     public static void setRanges(Configuration conf, Collection<Range> ranges) {
@@ -57,11 +61,11 @@ public abstract class InputFormatBase<K, V> extends InputFormat<K, V> {
         for (Range r : ranges) {
             convertedRanges.add(r.impl);
         }
-        CloudbaseInputFormat.setRanges(new JobContextShim(conf), convertedRanges);
+        CloudbaseInputFormatShim.setRanges(new JobContextShim(conf), convertedRanges);
     }
 
     public static void disableAutoAdjustRanges(Configuration conf) {
-        CloudbaseInputFormat.disableAutoAdjustRanges(new JobContextShim(conf));
+        CloudbaseInputFormatShim.disableAutoAdjustRanges(new JobContextShim(conf));
     }
 
     public static enum RegexType {
@@ -69,11 +73,11 @@ public abstract class InputFormatBase<K, V> extends InputFormat<K, V> {
     }
 
     public static void setRegex(JobContext job, RegexType type, String regex) {
-        CloudbaseInputFormat.setRegex(job, CloudbaseInputFormat.RegexType.valueOf(type.name()), regex);
+        CloudbaseInputFormatShim.setRegex(job, CloudbaseInputFormatShim.RegexType.valueOf(type.name()), regex);
     }
 
     public static void setMaxVersions(Configuration conf, int maxVersions) throws IOException {
-        CloudbaseInputFormat.setMaxVersions(new JobContextShim(conf), maxVersions);
+        CloudbaseInputFormatShim.setMaxVersions(new JobContextShim(conf), maxVersions);
     }
 
     public static void setScanOffline(Configuration conf, boolean scanOff) {
@@ -85,26 +89,146 @@ public abstract class InputFormatBase<K, V> extends InputFormat<K, V> {
         for (Pair<Text, Text> pair : columnFamilyColumnQualifierPairs) {
             convertedPairs.add(new cloudbase.core.util.Pair<Text, Text>(pair.getFirst(), pair.getSecond()));
         }
-        CloudbaseInputFormat.fetchColumns(new JobContextShim(conf), convertedPairs);
+        CloudbaseInputFormatShim.fetchColumns(new JobContextShim(conf), convertedPairs);
     }
 
     public static void setLogLevel(Configuration conf, Level level) {
-        CloudbaseInputFormat.setLogLevel(new JobContextShim(conf), level);
+        CloudbaseInputFormatShim.setLogLevel(new JobContextShim(conf), level);
     }
 
     public static void addIterator(Configuration conf, IteratorSetting cfg) {
         JobContext job = new JobContextShim(conf);
-        CloudbaseInputFormat.setIterator(job, cfg.getPriority(), cfg.getIteratorClass(), cfg.getName());
+        CloudbaseInputFormatShim.setIterator(job, cfg.getPriority(), cfg.getIteratorClass(), cfg.getName());
         for (Map.Entry<String, String> option : cfg.getOptions().entrySet()) {
-            CloudbaseInputFormat.setIteratorOption(job, cfg.getName(), option.getKey(), option.getValue());
+            CloudbaseInputFormatShim.setIteratorOption(job, cfg.getName(), option.getKey(), option.getValue());
         }
     }
 
     public static void setIterator(JobContext job, int priority, String iteratorClass, String iteratorName) {
-        CloudbaseInputFormat.setIterator(job, priority, iteratorClass, iteratorName);
+        CloudbaseInputFormatShim.setIterator(job, priority, iteratorClass, iteratorName);
     }
 
     public static void setIteratorOption(JobContext job, String iteratorName, String key, String value) {
-        CloudbaseInputFormat.setIteratorOption(job, iteratorName, key, value);
+        CloudbaseInputFormatShim.setIteratorOption(job, iteratorName, key, value);
+    }
+
+    protected static boolean isIsolated(JobContext job) {
+        return CloudbaseInputFormatShim.isIsolated(job);
+    }
+
+    protected static boolean isIsolated(Configuration conf) {
+        return isIsolated(new JobContextShim(conf));
+    }
+
+    protected static boolean usesLocalIterators(JobContext job) {
+        throw new UnsupportedOperationException();
+    }
+
+    protected static boolean usesLocalIterators(Configuration conf) {
+        throw new UnsupportedOperationException();
+    }
+
+    protected static String getUsername(JobContext job) {
+        return CloudbaseInputFormatShim.getUsername(job);
+    }
+
+    protected static String getUsername(Configuration conf) {
+        return getUsername(new JobContextShim(conf));
+    }
+
+    protected static byte[] getPassword(JobContext job) {
+        return CloudbaseInputFormatShim.getPassword(job);
+    }
+
+    protected static byte[] getPassword(Configuration conf) {
+        return getPassword(new JobContextShim(conf));
+    }
+
+    protected static String getTablename(JobContext job) {
+        return CloudbaseInputFormatShim.getTablename(job);
+    }
+
+    protected static String getTablename(Configuration conf) {
+        return getTablename(new JobContextShim(conf));
+    }
+
+    protected static Authorizations getAuthorizations(JobContext job) {
+        return new Authorizations(CloudbaseInputFormatShim.getAuthorizations(job));
+    }
+
+    protected static Authorizations getAuthorizations(Configuration conf) {
+        return getAuthorizations(new JobContextShim(conf));
+    }
+
+    protected static Instance getInstance(JobContext job) {
+        return new InstanceShim(CloudbaseInputFormatShim.getInstance(job));
+    }
+
+    protected static Instance getInstance(Configuration conf) {
+        return getInstance(new JobContextShim(conf));
+    }
+
+    protected static TabletLocator getTabletLocator(JobContext job) throws TableNotFoundException {
+        try {
+            return new TabletLocatorShim(CloudbaseInputFormatShim.getTabletLocator(job));
+        } catch (cloudbase.core.client.TableNotFoundException e) {
+            throw new TableNotFoundException(e);
+        }
+    }
+
+    protected static TabletLocator getTabletLocator(Configuration conf) throws TableNotFoundException {
+        return getTabletLocator(new JobContextShim(conf));
+    }
+
+    @SuppressWarnings("unchecked")
+    protected static List<Range> getRanges(JobContext job) throws IOException {
+        return new ArrayList<Range>(CollectionUtils.collect(
+                CloudbaseInputFormatShim.getRanges(job),
+                new Transformer() {
+                    @Override
+                    public Object transform(Object input) {
+                        return new Range(((cloudbase.core.data.Range) input));
+                    }
+                }));
+    }
+
+    protected static List<Range> getRanges(Configuration conf) throws IOException {
+        return getRanges(new JobContextShim(conf));
+    }
+
+    protected static boolean getAutoAdjustRanges(JobContext job) {
+        return CloudbaseInputFormatShim.getAutoAdjustRanges(job);
+    }
+
+    protected static boolean getAutoAdjustRanges(Configuration conf) {
+        return getAutoAdjustRanges(new JobContextShim(conf));
+    }
+
+    protected static Level getLogLevel(JobContext job) {
+        return CloudbaseInputFormatShim.getLogLevel(job);
+    }
+
+    protected static Level getLogLevel(Configuration conf) {
+        return getLogLevel(new JobContextShim(conf));
+    }
+
+    protected static void validateOptions(JobContext job) throws IOException {
+        CloudbaseInputFormatShim.validateOptions(job);
+    }
+
+    protected static void validateOptions(Configuration conf) throws IOException {
+        validateOptions(new JobContextShim(conf));
+    }
+
+    protected static int getMaxVersions(JobContext job) {
+        return CloudbaseInputFormatShim.getMaxVersions(job);
+    }
+
+    protected static int getMaxVersions(Configuration conf) {
+        return getMaxVersions(new JobContextShim(conf));
+    }
+
+    protected static boolean isOfflineScan(Configuration conf) {
+        throw new UnsupportedOperationException();
     }
 }
