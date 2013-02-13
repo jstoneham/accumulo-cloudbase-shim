@@ -25,8 +25,10 @@ import org.apache.accumulo.core.client.admin.TableOperations;
 import org.apache.accumulo.core.client.admin.TimeType;
 import org.apache.accumulo.core.data.Range;
 import org.apache.accumulo.core.iterators.IteratorUtil;
+import org.apache.accumulo.core.util.BulkImportHelper;
 import org.apache.hadoop.io.Text;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -229,6 +231,22 @@ public class TableOperationsShim implements TableOperations {
             throw new AccumuloSecurityException(e);
         } catch (cloudbase.core.client.TableNotFoundException e) {
             throw new TableNotFoundException(e);
+        }
+    }
+
+    @Override
+    public void importDirectory(String tableName, String dir, String failureDir, boolean setTime) throws TableNotFoundException, IOException, AccumuloException, AccumuloSecurityException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public BulkImportHelper.AssignmentStats importDirectory(String tableName, String dir, String failureDir, int numThreads, int numAssignThreads, boolean disableGC) throws IOException, AccumuloException, AccumuloSecurityException {
+        try {
+            return new BulkImportHelper.AssignmentStats(impl.importDirectory(tableName, dir, failureDir, numThreads, numAssignThreads, disableGC));
+        } catch (CBException e) {
+            throw new AccumuloException(e);
+        } catch (CBSecurityException e) {
+            throw new AccumuloSecurityException(e);
         }
     }
 

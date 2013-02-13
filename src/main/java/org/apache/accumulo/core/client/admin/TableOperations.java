@@ -19,8 +19,10 @@ package org.apache.accumulo.core.client.admin;
 import org.apache.accumulo.core.client.*;
 import org.apache.accumulo.core.data.Range;
 import org.apache.accumulo.core.iterators.IteratorUtil;
+import org.apache.accumulo.core.util.BulkImportHelper;
 import org.apache.hadoop.io.Text;
 
+import java.io.IOException;
 import java.util.*;
 
 public interface TableOperations {
@@ -61,6 +63,12 @@ public interface TableOperations {
 
     public Set<Range> splitRangeByTablets(String tableName, Range range, int maxSplits) throws AccumuloException, AccumuloSecurityException,
             TableNotFoundException;
+
+    public void importDirectory(String tableName, String dir, String failureDir, boolean setTime) throws TableNotFoundException, IOException, AccumuloException,
+        AccumuloSecurityException;
+
+    public BulkImportHelper.AssignmentStats importDirectory(String tableName, String dir, String failureDir, int numThreads, int numAssignThreads, boolean disableGC)
+        throws IOException, AccumuloException, AccumuloSecurityException;
 
     public void offline(String tableName) throws AccumuloSecurityException, AccumuloException, TableNotFoundException;
 
