@@ -21,16 +21,15 @@ import org.apache.accumulo.core.data.Value;
 import org.apache.accumulo.core.util.PeekingIterator;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.InputSplit;
-import org.apache.hadoop.mapreduce.JobContext;
 import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
 public class AccumuloRowInputFormat extends InputFormatBase<Text, PeekingIterator<Map.Entry<Key, Value>>> {
-    public List<InputSplit> getSplits(JobContext jobContext) throws IOException, InterruptedException {
+
+    public AccumuloRowInputFormat() {
         throw new UnsupportedOperationException();
     }
 

@@ -16,30 +16,18 @@
  */
 package org.apache.accumulo.core.client.mapreduce;
 
-import cloudbase.core.client.mapreduce.CloudbaseInputFormat;
 import com.texeltek.accumulocloudbaseshim.RecordReaderShim;
 import org.apache.accumulo.core.data.Key;
 import org.apache.accumulo.core.data.Value;
 import org.apache.hadoop.mapreduce.InputSplit;
-import org.apache.hadoop.mapreduce.JobContext;
 import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 
 import java.io.IOException;
-import java.util.List;
 
 public class AccumuloInputFormat extends InputFormatBase<Key, Value> {
-    private final CloudbaseInputFormat impl = new CloudbaseInputFormat();
-
-    public List<InputSplit> getSplits(JobContext jobContext) throws IOException, InterruptedException {
-        return impl.getSplits(jobContext);
-    }
 
     public RecordReader<Key, Value> createRecordReader(InputSplit split, TaskAttemptContext context) throws IOException, InterruptedException {
         return new RecordReaderShim(impl.createRecordReader(split, context));
-    }
-
-    public String toString() {
-        return impl.toString();
     }
 }

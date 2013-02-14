@@ -32,13 +32,23 @@ import org.apache.commons.collections.Transformer;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.InputFormat;
+import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.JobContext;
 import org.apache.log4j.Level;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 public abstract class InputFormatBase<K, V> extends InputFormat<K, V> {
+
+    public final cloudbase.core.client.mapreduce.CloudbaseInputFormat impl;
+
+    public InputFormatBase() {
+        this.impl = new cloudbase.core.client.mapreduce.CloudbaseInputFormat();
+    }
 
     public static void setIsolated(Configuration conf, boolean enable) {
         CloudbaseInputFormatShim.setIsolated(new JobContextShim(conf), enable);
@@ -110,6 +120,10 @@ public abstract class InputFormatBase<K, V> extends InputFormat<K, V> {
 
     public static void setIteratorOption(JobContext job, String iteratorName, String key, String value) {
         CloudbaseInputFormatShim.setIteratorOption(job, iteratorName, key, value);
+    }
+
+    public List<InputSplit> getSplits(JobContext job) throws IOException {
+        return impl.getSplits(job);
     }
 
     protected static boolean isIsolated(JobContext job) {
