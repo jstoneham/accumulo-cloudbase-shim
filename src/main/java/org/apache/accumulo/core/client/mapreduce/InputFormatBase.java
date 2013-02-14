@@ -28,6 +28,7 @@ import org.apache.accumulo.core.data.Range;
 import org.apache.accumulo.core.security.Authorizations;
 import org.apache.accumulo.core.util.Pair;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.SetUtils;
 import org.apache.commons.collections.Transformer;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.Text;
@@ -37,10 +38,7 @@ import org.apache.hadoop.mapreduce.JobContext;
 import org.apache.log4j.Level;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public abstract class InputFormatBase<K, V> extends InputFormat<K, V> {
 
@@ -251,6 +249,21 @@ public abstract class InputFormatBase<K, V> extends InputFormat<K, V> {
 
     protected static List<Range> getRanges(Configuration conf) throws IOException {
         return getRanges(new JobContextShim(conf));
+    }
+
+    @SuppressWarnings("unchecked")
+    protected static Set<Pair<Text, Text>> getFetchedColumns(JobContext job) {
+        return SetUtils.transformedSet(CloudbaseInputFormatShim.getFetchedColumns(job),
+                new Transformer() {
+                    @Override
+                    public Object transform(Object input) {
+                        return ((Pair) input).impl;
+                    }
+                });
+    }
+
+    protected static Set<Pair<Text, Text>> getFetchedColumns(Configuration conf) {
+        return getFetchedColumns(new JobContextShim(conf));
     }
 
     protected static boolean getAutoAdjustRanges(JobContext job) {

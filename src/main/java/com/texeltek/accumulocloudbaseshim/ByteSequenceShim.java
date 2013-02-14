@@ -18,11 +18,10 @@ package com.texeltek.accumulocloudbaseshim;
 
 import org.apache.accumulo.core.data.ByteSequence;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.SetUtils;
 import org.apache.commons.collections.Transformer;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 public class ByteSequenceShim extends ByteSequence {
@@ -68,7 +67,13 @@ public class ByteSequenceShim extends ByteSequence {
 
     @SuppressWarnings("unchecked")
     public static Set<cloudbase.core.data.ByteSequence> cloudbaseSet(Set<ByteSequence> byteSequenceSet) {
-        return Collections.unmodifiableSet(new HashSet<cloudbase.core.data.ByteSequence>(cloudbaseCollection(byteSequenceSet)));
+        return SetUtils.transformedSet(byteSequenceSet,
+                new Transformer() {
+                    @Override
+                    public Object transform(Object o) {
+                        return ((ByteSequence) o).impl;
+                    }
+                });
     }
 
     @SuppressWarnings("unchecked")
