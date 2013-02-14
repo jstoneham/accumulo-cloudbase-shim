@@ -50,32 +50,60 @@ public abstract class InputFormatBase<K, V> extends InputFormat<K, V> {
         this.impl = new cloudbase.core.client.mapreduce.CloudbaseInputFormat();
     }
 
+    public static void setIsolated(JobContext job, boolean enable) {
+        CloudbaseInputFormatShim.setIsolated(job, enable);
+    }
+
     public static void setIsolated(Configuration conf, boolean enable) {
-        CloudbaseInputFormatShim.setIsolated(new JobContextShim(conf), enable);
+        setIsolated(new JobContextShim(conf), enable);
+    }
+
+    public static void setInputInfo(JobContext job, String user, byte[] passwd, String table, Authorizations auths) {
+        CloudbaseInputFormatShim.setInputInfo(job, user, passwd, table, auths.impl);
     }
 
     public static void setInputInfo(Configuration conf, String user, byte[] passwd, String table, Authorizations auths) {
-        CloudbaseInputFormatShim.setInputInfo(new JobContextShim(conf), user, passwd, table, auths.impl);
+        setInputInfo(new JobContextShim(conf), user, passwd, table, auths);
+    }
+
+    public static void setZooKeeperInstance(JobContext job, String instanceName, String zooKeepers) {
+        CloudbaseInputFormatShim.setZooKeeperInstance(job, instanceName, zooKeepers);
     }
 
     public static void setZooKeeperInstance(Configuration conf, String instanceName, String zooKeepers) {
-        CloudbaseInputFormatShim.setZooKeeperInstance(new JobContextShim(conf), instanceName, zooKeepers);
+        setZooKeeperInstance(new JobContextShim(conf), instanceName, zooKeepers);
+    }
+
+    public static void setMockInstance(JobContext job, String instanceName) {
+        CloudbaseInputFormatShim.setMockInstance(job, instanceName);
     }
 
     public static void setMockInstance(Configuration conf, String instanceName) {
-        CloudbaseInputFormatShim.setMockInstance(new JobContextShim(conf), instanceName);
+        setMockInstance(new JobContextShim(conf), instanceName);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static void setRanges(JobContext job, Collection<Range> ranges) {
+        CloudbaseInputFormatShim.setRanges(job,
+                CollectionUtils.collect(ranges,
+                        new Transformer() {
+                            @Override
+                            public Object transform(Object input) {
+                                return ((Range) input).impl;
+                            }
+                        }));
     }
 
     public static void setRanges(Configuration conf, Collection<Range> ranges) {
-        List<cloudbase.core.data.Range> convertedRanges = new ArrayList<cloudbase.core.data.Range>(ranges.size());
-        for (Range r : ranges) {
-            convertedRanges.add(r.impl);
-        }
-        CloudbaseInputFormatShim.setRanges(new JobContextShim(conf), convertedRanges);
+        setRanges(new JobContextShim(conf), ranges);
+    }
+
+    public static void disableAutoAdjustRanges(JobContext job) {
+        CloudbaseInputFormatShim.disableAutoAdjustRanges(job);
     }
 
     public static void disableAutoAdjustRanges(Configuration conf) {
-        CloudbaseInputFormatShim.disableAutoAdjustRanges(new JobContextShim(conf));
+        disableAutoAdjustRanges(new JobContextShim(conf));
     }
 
     public static enum RegexType {
@@ -94,24 +122,39 @@ public abstract class InputFormatBase<K, V> extends InputFormat<K, V> {
         throw new UnsupportedOperationException();
     }
 
+    @SuppressWarnings("unchecked")
+    public static void fetchColumns(JobContext job, Collection<Pair<Text,Text>> columnFamilyColumnQualifierPairs) {
+        CloudbaseInputFormatShim.fetchColumns(job,
+                CollectionUtils.collect(columnFamilyColumnQualifierPairs,
+                        new Transformer() {
+                            @Override
+                            public Object transform(Object input) {
+                                return ((Pair) input).impl;
+                            }
+                        }));
+    }
+
     public static void fetchColumns(Configuration conf, Collection<Pair<Text, Text>> columnFamilyColumnQualifierPairs) {
-        List<cloudbase.core.util.Pair<Text, Text>> convertedPairs = new ArrayList<cloudbase.core.util.Pair<Text, Text>>(columnFamilyColumnQualifierPairs.size());
-        for (Pair<Text, Text> pair : columnFamilyColumnQualifierPairs) {
-            convertedPairs.add(new cloudbase.core.util.Pair<Text, Text>(pair.getFirst(), pair.getSecond()));
-        }
-        CloudbaseInputFormatShim.fetchColumns(new JobContextShim(conf), convertedPairs);
+        fetchColumns(new JobContextShim(conf), columnFamilyColumnQualifierPairs);
+    }
+
+    public static void setLogLevel(JobContext job, Level level) {
+        CloudbaseInputFormatShim.setLogLevel(job, level);
     }
 
     public static void setLogLevel(Configuration conf, Level level) {
-        CloudbaseInputFormatShim.setLogLevel(new JobContextShim(conf), level);
+        setLogLevel(new JobContextShim(conf), level);
     }
 
-    public static void addIterator(Configuration conf, IteratorSetting cfg) {
-        JobContext job = new JobContextShim(conf);
+    public static void addIterator(JobContext job, IteratorSetting cfg) {
         CloudbaseInputFormatShim.setIterator(job, cfg.getPriority(), cfg.getIteratorClass(), cfg.getName());
         for (Map.Entry<String, String> option : cfg.getOptions().entrySet()) {
             CloudbaseInputFormatShim.setIteratorOption(job, cfg.getName(), option.getKey(), option.getValue());
         }
+    }
+
+    public static void addIterator(Configuration conf, IteratorSetting cfg) {
+        addIterator(new JobContextShim(conf), cfg);
     }
 
     public static void setIterator(JobContext job, int priority, String iteratorClass, String iteratorName) {

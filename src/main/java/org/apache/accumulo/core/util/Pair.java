@@ -17,50 +17,32 @@
 package org.apache.accumulo.core.util;
 
 public class Pair<A, B> {
-    A first;
-    B second;
+
+    public final cloudbase.core.util.Pair<A, B> impl;
 
     public Pair(A f, B s) {
-        this.first = f;
-        this.second = s;
-    }
-
-    private int hashCode(Object o) {
-        if (o == null)
-            return 0;
-        return o.hashCode();
+        this.impl = new cloudbase.core.util.Pair<A, B>(f, s);
     }
 
     @Override
     public int hashCode() {
-        return hashCode(first) + hashCode(second);
-    }
-
-    private boolean equals(Object o1, Object o2) {
-        if (o1 == null || o2 == null)
-            return o1 == o2;
-
-        return o1.equals(o2);
+        return impl.hashCode();
     }
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof Pair<?, ?>) {
-            Pair<?, ?> op = (Pair<?, ?>) o;
-            return equals(first, op.first) && equals(second, op.second);
-        }
-        return false;
+        return impl.equals(o);
     }
 
     public A getFirst() {
-        return first;
+        return impl.getFirst();
     }
 
     public B getSecond() {
-        return second;
+        return impl.getSecond();
     }
 
     public String toString() {
-        return "(" + first + "," + second + ")";
+        return impl.toString();
     }
 }
