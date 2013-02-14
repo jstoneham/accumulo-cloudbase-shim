@@ -30,32 +30,64 @@ public class AccumuloOutputFormat extends OutputFormat<Text, Mutation> {
     private final cloudbase.core.client.mapreduce.CloudbaseOutputFormat impl =
             new cloudbase.core.client.mapreduce.CloudbaseOutputFormat();
 
+    public static void setOutputInfo(JobContext job, String user, byte[] passwd, boolean createTables, String defaultTable) {
+        CloudbaseOutputFormat.setOutputInfo(job, user, passwd, createTables, defaultTable);
+    }
+
     public static void setOutputInfo(Configuration conf, String user, byte[] passwd, boolean createTables, String defaultTable) {
         CloudbaseOutputFormat.setOutputInfo(new JobContextShim(conf), user, passwd, createTables, defaultTable);
+    }
+
+    public static void setZooKeeperInstance(JobContext job, String instanceName, String zooKeepers) {
+        CloudbaseOutputFormat.setZooKeeperInstance(job, instanceName, zooKeepers);
     }
 
     public static void setZooKeeperInstance(Configuration conf, String instanceName, String zooKeepers) {
         CloudbaseOutputFormat.setZooKeeperInstance(new JobContextShim(conf), instanceName, zooKeepers);
     }
 
+    public static void setMockInstance(JobContext job, String instanceName) {
+        throw new UnsupportedOperationException();
+    }
+
     public static void setMockInstance(Configuration conf, String instanceName) {
         throw new UnsupportedOperationException();
+    }
+
+    public static void setMaxMutationBufferSize(JobContext job, long numberOfBytes) {
+        CloudbaseOutputFormat.setMaxMutationBufferSize(job, numberOfBytes);
     }
 
     public static void setMaxMutationBufferSize(Configuration conf, long numberOfBytes) {
         CloudbaseOutputFormat.setMaxMutationBufferSize(new JobContextShim(conf), numberOfBytes);
     }
 
+    public static void setMaxLatency(JobContext job, int numberOfMilliseconds) {
+        CloudbaseOutputFormat.setMaxLatency(job, numberOfMilliseconds);
+    }
+
     public static void setMaxLatency(Configuration conf, int numberOfMilliseconds) {
         CloudbaseOutputFormat.setMaxLatency(new JobContextShim(conf), numberOfMilliseconds);
+    }
+
+    public static void setMaxWriteThreads(JobContext job, int numberOfThreads) {
+        CloudbaseOutputFormat.setMaxWriteThreads(job, numberOfThreads);
     }
 
     public static void setMaxWriteThreads(Configuration conf, int numberOfThreads) {
         CloudbaseOutputFormat.setMaxWriteThreads(new JobContextShim(conf), numberOfThreads);
     }
 
+    public static void setLogLevel(JobContext job, Level level) {
+        CloudbaseOutputFormat.setLogLevel(job, level);
+    }
+
     public static void setLogLevel(Configuration conf, Level level) {
         CloudbaseOutputFormat.setLogLevel(new JobContextShim(conf), level);
+    }
+
+    public static void setSimulationMode(JobContext job) {
+        CloudbaseOutputFormat.setSimulationMode(job);
     }
 
     public static void setSimulationMode(Configuration conf) {
