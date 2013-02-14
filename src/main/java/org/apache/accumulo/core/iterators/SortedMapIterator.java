@@ -16,6 +16,7 @@
  */
 package org.apache.accumulo.core.iterators;
 
+import com.texeltek.accumulocloudbaseshim.ByteSequenceShim;
 import com.texeltek.accumulocloudbaseshim.IteratorEnvironmentShim;
 import org.apache.accumulo.core.data.ByteSequence;
 import org.apache.accumulo.core.data.Key;
@@ -86,13 +87,7 @@ public class SortedMapIterator implements InterruptibleIterator {
     @Override
     @SuppressWarnings("unchecked")
     public void seek(Range range, Collection<ByteSequence> columnFamilies, boolean inclusive) throws IOException {
-        impl.seek(range.impl,
-                CollectionUtils.collect(columnFamilies, new Transformer() {
-                    @Override
-                    public Object transform(Object o) {
-                        return ((ByteSequence) o).impl;
-                    }
-                }), inclusive);
+        impl.seek(range.impl, ByteSequenceShim.cloudbaseCollection(columnFamilies), inclusive);
     }
 
     public void init(SortedKeyValueIterator<Key, Value> source, Map<String, String> options, IteratorEnvironment env) throws IOException {
