@@ -18,10 +18,12 @@ package org.apache.accumulo.core.client.mock;
 
 import cloudbase.core.client.CBException;
 import cloudbase.core.client.CBSecurityException;
+import com.texeltek.accumulocloudbaseshim.AccumuloConfigurationShim;
 import org.apache.accumulo.core.client.AccumuloException;
 import org.apache.accumulo.core.client.AccumuloSecurityException;
 import org.apache.accumulo.core.client.Connector;
 import org.apache.accumulo.core.client.Instance;
+import org.apache.accumulo.core.conf.AccumuloConfiguration;
 import org.apache.accumulo.core.util.TextUtil;
 import org.apache.hadoop.io.Text;
 
@@ -87,6 +89,16 @@ public class MockInstance implements Instance {
 
     public cloudbase.core.client.mock.MockConnector getNativeConnector(String user, CharSequence pass) throws CBException, CBSecurityException {
         return (cloudbase.core.client.mock.MockConnector) impl.getConnector(user, pass);
+    }
+
+    @Override
+    public AccumuloConfiguration getConfiguration() {
+        return new AccumuloConfigurationShim(impl.getConfiguration());
+    }
+
+    @Override
+    public void setConfiguration(AccumuloConfiguration conf) {
+        impl.setConfiguration(conf.impl);
     }
 
     public String toString() {

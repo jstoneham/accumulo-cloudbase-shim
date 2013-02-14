@@ -18,6 +18,7 @@ package org.apache.accumulo.core.client;
 
 import cloudbase.core.client.CBException;
 import cloudbase.core.client.CBSecurityException;
+import org.apache.accumulo.core.conf.AccumuloConfiguration;
 
 import java.util.List;
 
@@ -42,4 +43,7 @@ public interface Instance {
 
     cloudbase.core.client.Connector getNativeConnector(String user, CharSequence pass) throws CBException, CBSecurityException;
 
+    AccumuloConfiguration getConfiguration();
+
+    void setConfiguration(AccumuloConfiguration conf);
 }

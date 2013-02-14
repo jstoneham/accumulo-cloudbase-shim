@@ -18,6 +18,8 @@ package org.apache.accumulo.core.client;
 
 import cloudbase.core.client.CBException;
 import cloudbase.core.client.CBSecurityException;
+import com.texeltek.accumulocloudbaseshim.AccumuloConfigurationShim;
+import org.apache.accumulo.core.conf.AccumuloConfiguration;
 
 import java.util.List;
 import java.util.UUID;
@@ -92,6 +94,16 @@ public class ZooKeeperInstance implements Instance {
 
     public cloudbase.core.client.Connector getNativeConnector(String user, byte[] pass) throws CBException, CBSecurityException {
         return impl.getConnector(user, pass);
+    }
+
+    @Override
+    public AccumuloConfiguration getConfiguration() {
+        return new AccumuloConfigurationShim(impl.getConfiguration());
+    }
+
+    @Override
+    public void setConfiguration(AccumuloConfiguration conf) {
+        impl.setConfiguration(conf.impl);
     }
 
     public String toString() {
