@@ -16,6 +16,7 @@
  */
 package org.apache.accumulo.core.client.mock;
 
+import com.texeltek.accumulocloudbaseshim.SortedKeyValueIteratorShim;
 import org.apache.accumulo.core.client.ScannerBase;
 import org.apache.accumulo.core.client.impl.ScannerOptions;
 import org.apache.accumulo.core.data.Key;
@@ -35,7 +36,7 @@ public class MockScannerBase extends ScannerOptions implements ScannerBase {
     }
 
     public SortedKeyValueIterator<Key, Value> createFilter(SortedKeyValueIterator<Key, Value> inner) throws IOException {
-        throw new UnsupportedOperationException();
+        return new SortedKeyValueIteratorShim(impl.createFilter(((SortedKeyValueIteratorShim) inner).impl));
     }
 
     public Iterator<Map.Entry<Key, Value>> iterator() {
