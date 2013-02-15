@@ -70,13 +70,7 @@ public class MockInstance implements Instance {
     }
 
     public Connector getConnector(String user, byte[] pass) throws AccumuloException, AccumuloSecurityException {
-        try {
-            return new MockConnector(getNativeConnector(user, pass));
-        } catch (CBException e) {
-            throw new AccumuloException(e);
-        } catch (CBSecurityException e) {
-            throw new AccumuloSecurityException(e);
-        }
+        return new MockConnector(this, user, pass);
     }
 
     public cloudbase.core.client.mock.MockConnector getNativeConnector(String user, byte[] pass) throws CBException, CBSecurityException {
