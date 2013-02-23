@@ -57,6 +57,10 @@ public abstract class AccumuloConfiguration implements Iterable<Entry<String, St
         return impl.getCount(cloudbaseProperty(property));
     }
 
+    public static synchronized DefaultConfiguration getDefaultConfiguration() {
+        return new DefaultConfiguration(cloudbase.core.conf.CBConfiguration.getDefaultConfiguration());
+    }
+
     protected cloudbase.core.conf.Property cloudbaseProperty(Property property) {
         return cloudbase.core.conf.Property.valueOf(property.name());
     }
