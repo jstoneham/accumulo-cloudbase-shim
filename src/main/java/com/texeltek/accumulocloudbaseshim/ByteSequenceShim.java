@@ -77,8 +77,8 @@ public class ByteSequenceShim extends ByteSequence {
     }
 
     @SuppressWarnings("unchecked")
-    public static Collection<cloudbase.core.data.ByteSequence> cloudbaseCollection(Collection<ByteSequence> byteSequenceSet) {
-        return CollectionUtils.collect(byteSequenceSet,
+    public static Collection<cloudbase.core.data.ByteSequence> cloudbaseCollection(Collection<ByteSequence> byteSequenceCollection) {
+        return CollectionUtils.collect(byteSequenceCollection,
                 new Transformer() {
                     @Override
                     public Object transform(Object o) {
