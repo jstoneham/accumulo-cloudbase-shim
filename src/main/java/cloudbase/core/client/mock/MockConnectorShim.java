@@ -16,15 +16,24 @@
  */
 package cloudbase.core.client.mock;
 
+import cloudbase.core.client.*;
+
 /**
  * Subclass to make package-private methods public for use by other classes.
  */
 public class MockConnectorShim extends MockConnector {
+
     public MockConnectorShim(String username) {
         super(username);
     }
 
     public MockConnectorShim(String username, MockCloudbase mockCloudbase) {
         super(username, mockCloudbase);
+    }
+
+    @Override
+    public MultiTableBatchWriter createMultiTableBatchWriter(final long maxMemory, final int maxLatency,
+                                                             final int maxWriteThreads) {
+        return new MockMultiTableBatchWriterShim(this, maxMemory, maxLatency, maxWriteThreads);
     }
 }
