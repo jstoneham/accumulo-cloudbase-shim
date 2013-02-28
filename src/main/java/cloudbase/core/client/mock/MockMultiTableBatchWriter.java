@@ -21,7 +21,7 @@ import cloudbase.core.client.*;
 /**
  * Very simple MultiTableBatchWriter for mocks
  */
-public class MockMultiTableBatchWriterShim implements MultiTableBatchWriter{
+public class MockMultiTableBatchWriter implements MultiTableBatchWriter {
 
     private Connector connector;
     private boolean closed = false;
@@ -29,7 +29,7 @@ public class MockMultiTableBatchWriterShim implements MultiTableBatchWriter{
     private final long maxLatency;
     private final int maxWriteThreads;
 
-    public MockMultiTableBatchWriterShim(Connector connector, long maxMemory, long maxLatency, int maxWriteThreads) {
+    public MockMultiTableBatchWriter(Connector connector, long maxMemory, long maxLatency, int maxWriteThreads) {
         this.connector = connector;
         this.maxMemory = maxMemory;
         this.maxLatency = maxLatency;

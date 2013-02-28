@@ -34,6 +34,6 @@ public class MockConnectorShim extends MockConnector {
     @Override
     public MultiTableBatchWriter createMultiTableBatchWriter(final long maxMemory, final int maxLatency,
                                                              final int maxWriteThreads) {
-        return new MockMultiTableBatchWriterShim(this, maxMemory, maxLatency, maxWriteThreads);
+        return new MockMultiTableBatchWriter(this, maxMemory, maxLatency, maxWriteThreads);
     }
 }

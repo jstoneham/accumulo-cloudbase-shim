@@ -18,7 +18,7 @@ package cloudbase.core.client.mapreduce;
 
 import cloudbase.core.client.*;
 import cloudbase.core.client.mock.MockInstance;
-import cloudbase.core.client.mock.MockMultiTableBatchWriterShim;
+import cloudbase.core.client.mock.MockMultiTableBatchWriter;
 import cloudbase.core.data.ColumnUpdate;
 import cloudbase.core.data.KeyExtent;
 import cloudbase.core.data.Mutation;
@@ -53,7 +53,7 @@ public class CloudbaseOutputFormatShim extends CloudbaseOutputFormat {
         if (isMock(conf)) {
             return new MockInstance(conf.get(INSTANCE_NAME));
         }
-        return getInstance(job);
+        return CloudbaseOutputFormat.getInstance(job);
     }
 
     protected static boolean isMock(Configuration conf) {
@@ -67,17 +67,17 @@ public class CloudbaseOutputFormatShim extends CloudbaseOutputFormat {
         conf.set(INSTANCE_NAME, instanceName);
     }
 
+    @Override
     public RecordWriter<Text, Mutation> getRecordWriter(TaskAttemptContext attempt)
             throws IOException {
-        try {
-            if (isMock(attempt.getConfiguration())) {
+        if (isMock(attempt.getConfiguration())) {
+            try {
                 return new MockCloudbaseRecordWriter(attempt);
-            } else {
-                return super.getRecordWriter(attempt);
+            } catch (Exception e) {
+                throw new IOException(e);
             }
-        } catch (Exception e) {
-            throw new IOException(e);
         }
+        return super.getRecordWriter(attempt);
     }
 
     @Override
@@ -249,7 +249,7 @@ public class CloudbaseOutputFormatShim extends CloudbaseOutputFormat {
             defaultTableName = tname != null ? new Text(tname) : null;
             if (!simulate) {
                 conn = CloudbaseOutputFormatShim.getInstance(attempt).getConnector(CloudbaseOutputFormat.getUsername(attempt), CloudbaseOutputFormat.getPassword(attempt));
-                mtbw = new MockMultiTableBatchWriterShim(conn, CloudbaseOutputFormat.getMaxMutationBufferSize(attempt), CloudbaseOutputFormat.getMaxLatency(attempt), CloudbaseOutputFormat.getMaxWriteThreads(attempt));
+                mtbw = new MockMultiTableBatchWriter(conn, CloudbaseOutputFormat.getMaxMutationBufferSize(attempt), CloudbaseOutputFormat.getMaxLatency(attempt), CloudbaseOutputFormat.getMaxWriteThreads(attempt));
             }
         }
     }
