@@ -16,7 +16,7 @@
  */
 package cloudbase.core.client.mock;
 
-import cloudbase.core.client.*;
+import cloudbase.core.client.MultiTableBatchWriter;
 
 /**
  * Subclass to make package-private methods public for use by other classes.

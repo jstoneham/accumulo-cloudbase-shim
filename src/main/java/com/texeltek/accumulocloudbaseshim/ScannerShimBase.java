@@ -16,6 +16,8 @@
  */
 package com.texeltek.accumulocloudbaseshim;
 
+import cloudbase.core.iterators.FilteringIterator;
+import cloudbase.core.iterators.filter.Filter;
 import org.apache.accumulo.core.client.IteratorSetting;
 import org.apache.accumulo.core.client.ScannerBase;
 import org.apache.accumulo.core.iterators.SortedKeyIterator;
@@ -42,6 +44,8 @@ public abstract class ScannerShimBase implements ScannerBase {
                 translateColumnAgeOffFilter(cfg);
             } else if (cfg.getIteratorClass().equals(RegExFilter.class.getName())) {
                 translateRegExFilter(cfg);
+            } else if (isCloudbaseFilter(cfg.getIteratorClass())) {
+                translateCloudbaseFilter(cfg);
             } else {
                 translateCloudbaseIterator(cfg);
             }
@@ -93,6 +97,26 @@ public abstract class ScannerShimBase implements ScannerBase {
     private void translateIteratorsPackage(IteratorSetting cfg) {
         if (cfg.getIteratorClass().equals(SortedKeyIterator.class.getName())) {
             cfg.setIteratorClass(cloudbase.core.iterators.SortedKeyIterator.class.getName());
+        }
+    }
+
+    protected void translateCloudbaseFilter(IteratorSetting cfg) throws IOException {
+        String iteratorClass_str = cfg.getIteratorClass();
+        String name = cfg.getName();
+        baseImpl.setScanIterators(cfg.getPriority(), FilteringIterator.class.getName(), name);
+        baseImpl.setScanIteratorOption(name, "0", iteratorClass_str);
+        Map<String, String> options = cfg.getOptions();
+        for (Map.Entry<String, String> option : options.entrySet()) {
+            baseImpl.setScanIteratorOption(name, "0." + option.getKey(), option.getValue());
+        }
+    }
+
+    protected boolean isCloudbaseFilter(String iteratorClass_str) {
+        try {
+            Class<?> iteratorClass = Class.forName(iteratorClass_str);
+            return Filter.class.isAssignableFrom(iteratorClass);
+        } catch (ClassNotFoundException e) {
+            return false;
         }
     }
 
