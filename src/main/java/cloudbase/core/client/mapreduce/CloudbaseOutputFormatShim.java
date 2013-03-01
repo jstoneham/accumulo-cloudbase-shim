@@ -17,8 +17,7 @@
 package cloudbase.core.client.mapreduce;
 
 import cloudbase.core.client.*;
-import cloudbase.core.client.mock.MockInstance;
-import cloudbase.core.client.mock.MockMultiTableBatchWriter;
+import cloudbase.core.client.mock.*;
 import cloudbase.core.data.ColumnUpdate;
 import cloudbase.core.data.KeyExtent;
 import cloudbase.core.data.Mutation;
@@ -51,7 +50,7 @@ public class CloudbaseOutputFormatShim extends CloudbaseOutputFormat {
     protected static Instance getInstance(JobContext job) {
         Configuration conf = job.getConfiguration();
         if (isMock(conf)) {
-            return new MockInstance(conf.get(INSTANCE_NAME));
+            return new MockInstanceShim(conf.get(INSTANCE_NAME));
         }
         return CloudbaseOutputFormat.getInstance(job);
     }
@@ -249,7 +248,7 @@ public class CloudbaseOutputFormatShim extends CloudbaseOutputFormat {
             defaultTableName = tname != null ? new Text(tname) : null;
             if (!simulate) {
                 conn = CloudbaseOutputFormatShim.getInstance(attempt).getConnector(CloudbaseOutputFormat.getUsername(attempt), CloudbaseOutputFormat.getPassword(attempt));
-                mtbw = new MockMultiTableBatchWriter(conn, CloudbaseOutputFormat.getMaxMutationBufferSize(attempt), CloudbaseOutputFormat.getMaxLatency(attempt), CloudbaseOutputFormat.getMaxWriteThreads(attempt));
+                mtbw = new MockMultiTableBatchWriter(((MockConnectorShim) conn).cb);
             }
         }
     }

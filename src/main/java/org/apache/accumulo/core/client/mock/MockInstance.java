@@ -16,8 +16,6 @@
  */
 package org.apache.accumulo.core.client.mock;
 
-import cloudbase.core.client.CBException;
-import cloudbase.core.client.CBSecurityException;
 import com.texeltek.accumulocloudbaseshim.AccumuloConfigurationShim;
 import org.apache.accumulo.core.client.AccumuloException;
 import org.apache.accumulo.core.client.AccumuloSecurityException;
@@ -72,23 +70,23 @@ public class MockInstance implements Instance {
     public Connector getConnector(String user, byte[] pass) throws AccumuloException, AccumuloSecurityException {
         try {
             return new MockConnector(getNativeConnector(user, pass));
-        } catch (CBException e) {
+        } catch (cloudbase.core.client.CBException e) {
             throw new AccumuloException(e);
-        } catch (CBSecurityException e) {
+        } catch (cloudbase.core.client.CBSecurityException e) {
             throw new AccumuloSecurityException(e);
         }
     }
 
-    public cloudbase.core.client.mock.MockConnector getNativeConnector(String user, byte[] pass) throws CBException, CBSecurityException {
-        return (cloudbase.core.client.mock.MockConnector) impl.getConnector(user, pass);
+    public cloudbase.core.client.mock.MockConnector getNativeConnector(String user, byte[] pass) throws cloudbase.core.client.CBException, cloudbase.core.client.CBSecurityException {
+        return new cloudbase.core.client.mock.MockConnectorShim(user, impl);
     }
 
     public Connector getConnector(String user, CharSequence pass) throws AccumuloException, AccumuloSecurityException {
         return getConnector(user, TextUtil.getBytes(new Text(pass.toString())));
     }
 
-    public cloudbase.core.client.mock.MockConnector getNativeConnector(String user, CharSequence pass) throws CBException, CBSecurityException {
-        return (cloudbase.core.client.mock.MockConnector) impl.getConnector(user, pass);
+    public cloudbase.core.client.mock.MockConnector getNativeConnector(String user, CharSequence pass) throws cloudbase.core.client.CBException, cloudbase.core.client.CBSecurityException {
+        return new cloudbase.core.client.mock.MockConnectorShim(user);
     }
 
     @Override

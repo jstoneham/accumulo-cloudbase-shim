@@ -22,6 +22,7 @@ import cloudbase.core.client.impl.TabletLocator;
 import cloudbase.core.data.Range;
 import cloudbase.core.security.Authorizations;
 import cloudbase.core.util.Pair;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.JobContext;
 import org.apache.log4j.Level;

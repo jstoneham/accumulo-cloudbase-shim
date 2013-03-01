@@ -16,6 +16,7 @@
  */
 package org.apache.accumulo.core.client.mock;
 
+import cloudbase.core.client.mock.MockBatchWriterShim;
 import org.apache.accumulo.core.client.BatchWriter;
 import org.apache.accumulo.core.client.MutationsRejectedException;
 import org.apache.accumulo.core.data.Mutation;
@@ -24,10 +25,11 @@ public class MockBatchWriter implements BatchWriter {
 
     public final cloudbase.core.client.mock.MockBatchWriter impl;
 
-    public MockBatchWriter(cloudbase.core.client.mock.MockBatchWriter impl) {
-        this.impl = impl;
+    MockBatchWriter(MockAccumulo acu, String tablename) {
+        this.impl = new MockBatchWriterShim(acu.impl, tablename);
     }
 
+    @Override
     public void addMutation(Mutation m) throws MutationsRejectedException {
         try {
             impl.addMutation(m.impl);
@@ -36,6 +38,7 @@ public class MockBatchWriter implements BatchWriter {
         }
     }
 
+    @Override
     public void addMutations(Iterable<Mutation> iterable) throws MutationsRejectedException {
         try {
             for (Mutation m : iterable) {
@@ -46,6 +49,7 @@ public class MockBatchWriter implements BatchWriter {
         }
     }
 
+    @Override
     public void flush() throws MutationsRejectedException {
         try {
             impl.flush();
@@ -54,6 +58,7 @@ public class MockBatchWriter implements BatchWriter {
         }
     }
 
+    @Override
     public void close() throws MutationsRejectedException {
         try {
             impl.close();

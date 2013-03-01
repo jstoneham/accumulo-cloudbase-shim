@@ -16,24 +16,40 @@
  */
 package cloudbase.core.client.mock;
 
+import cloudbase.core.client.BatchDeleter;
 import cloudbase.core.client.MultiTableBatchWriter;
+import cloudbase.core.client.TableNotFoundException;
+import cloudbase.core.security.Authorizations;
 
 /**
  * Subclass to make package-private methods public for use by other classes.
  */
 public class MockConnectorShim extends MockConnector {
 
+    public final MockCloudbase cb;
+
     public MockConnectorShim(String username) {
-        super(username);
+        this(username, new MockCloudbase());
+    }
+
+    public MockConnectorShim(String username, MockInstance instance) {
+        this(username, instance.cb);
     }
 
     public MockConnectorShim(String username, MockCloudbase mockCloudbase) {
         super(username, mockCloudbase);
+        this.cb = mockCloudbase;
     }
 
     @Override
     public MultiTableBatchWriter createMultiTableBatchWriter(final long maxMemory, final int maxLatency,
                                                              final int maxWriteThreads) {
-        return new MockMultiTableBatchWriter(this, maxMemory, maxLatency, maxWriteThreads);
+        return new MockMultiTableBatchWriter(cb);
+    }
+
+    @Override
+    public BatchDeleter createBatchDeleter(String tableName, Authorizations authorizations, int numQueryThreads, long maxMemory, long maxLatency,
+                                           int maxWriteThreads) throws TableNotFoundException {
+        return new MockBatchDeleter(cb, tableName, authorizations);
     }
 }
