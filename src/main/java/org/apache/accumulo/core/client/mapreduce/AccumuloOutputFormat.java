@@ -17,6 +17,7 @@
 package org.apache.accumulo.core.client.mapreduce;
 
 import cloudbase.core.client.mapreduce.CloudbaseOutputFormat;
+import cloudbase.core.client.mapreduce.CloudbaseOutputFormatShim;
 import com.texeltek.accumulocloudbaseshim.JobContextShim;
 import org.apache.accumulo.core.data.Mutation;
 import org.apache.hadoop.conf.Configuration;
@@ -27,8 +28,8 @@ import org.apache.log4j.Level;
 import java.io.IOException;
 
 public class AccumuloOutputFormat extends OutputFormat<Text, Mutation> {
-    private final cloudbase.core.client.mapreduce.CloudbaseOutputFormat impl =
-            new cloudbase.core.client.mapreduce.CloudbaseOutputFormat();
+    private final cloudbase.core.client.mapreduce.CloudbaseOutputFormatShim impl =
+            new cloudbase.core.client.mapreduce.CloudbaseOutputFormatShim();
 
     public static void setOutputInfo(JobContext job, String user, byte[] passwd, boolean createTables, String defaultTable) {
         CloudbaseOutputFormat.setOutputInfo(job, user, passwd, createTables, defaultTable);
@@ -47,11 +48,11 @@ public class AccumuloOutputFormat extends OutputFormat<Text, Mutation> {
     }
 
     public static void setMockInstance(JobContext job, String instanceName) {
-        throw new UnsupportedOperationException();
+        CloudbaseOutputFormatShim.setMockInstance(job, instanceName);
     }
 
     public static void setMockInstance(Configuration conf, String instanceName) {
-        throw new UnsupportedOperationException();
+        CloudbaseOutputFormatShim.setMockInstance(new JobContextShim(conf), instanceName);
     }
 
     public static void setMaxMutationBufferSize(JobContext job, long numberOfBytes) {

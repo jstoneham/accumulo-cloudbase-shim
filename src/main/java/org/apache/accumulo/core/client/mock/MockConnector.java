@@ -16,7 +16,6 @@
  */
 package org.apache.accumulo.core.client.mock;
 
-import cloudbase.core.client.mock.MockConnectorShim;
 import org.apache.accumulo.core.client.AccumuloException;
 import org.apache.accumulo.core.client.AccumuloSecurityException;
 import org.apache.accumulo.core.client.Connector;
@@ -26,12 +25,12 @@ public class MockConnector extends Connector {
     public final cloudbase.core.client.mock.MockConnector impl;
 
     public MockConnector(String username) {
-        impl = new MockConnectorShim(username);
+        impl = new cloudbase.core.client.mock.MockConnectorShim(username);
     }
 
     public MockConnector(MockInstance instance, String user, byte[] password) throws AccumuloException, AccumuloSecurityException {
         super(instance, user, password);
-        impl = new MockConnectorShim(user);
+        impl = new cloudbase.core.client.mock.MockConnectorShim(user);
     }
 
     public MockConnector(cloudbase.core.client.mock.MockConnector impl) {
