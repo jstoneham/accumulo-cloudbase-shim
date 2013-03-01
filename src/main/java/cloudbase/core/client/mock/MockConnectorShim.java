@@ -32,6 +32,10 @@ public class MockConnectorShim extends MockConnector {
         this(username, new MockCloudbase());
     }
 
+    public MockConnectorShim(String username, MockInstance instance) {
+        this(username, instance.cb);
+    }
+
     public MockConnectorShim(String username, MockCloudbase mockCloudbase) {
         super(username, mockCloudbase);
         this.cb = mockCloudbase;

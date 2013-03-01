@@ -18,6 +18,7 @@ package cloudbase.core.client.mock;
 
 import cloudbase.core.client.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -26,7 +27,7 @@ import java.util.Map;
 public class MockMultiTableBatchWriter implements MultiTableBatchWriter {
 
     MockCloudbase cb = null;
-    Map<String, MockBatchWriter> bws = null;
+    Map<String, MockBatchWriter> bws = new HashMap<String, MockBatchWriter>();
 
     public MockMultiTableBatchWriter(MockCloudbase cb) {
         this.cb = cb;
