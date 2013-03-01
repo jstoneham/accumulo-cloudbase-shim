@@ -10,6 +10,7 @@ import cloudbase.core.data.Value;
 import cloudbase.core.security.Authorizations;
 import cloudbase.core.security.ColumnVisibility;
 
+import java.util.ConcurrentModificationException;
 import java.util.Map.Entry;
 
 public class MockBatchDeleter extends MockBatchScanner implements BatchDeleter {
@@ -25,16 +26,18 @@ public class MockBatchDeleter extends MockBatchScanner implements BatchDeleter {
 
     @Override
     public void delete() throws MutationsRejectedException, TableNotFoundException {
-//        BatchWriter writer = new MockBatchWriter(cb, tableName);
-//        try {
-//            for (Entry<Key, Value> next : this) {
-//                Key k = next.getKey();
-//                Mutation m = new Mutation(k.getRow());
-//                m.putDelete(k.getColumnFamily(), k.getColumnQualifier(), new ColumnVisibility(k.getColumnVisibility()), k.getTimestamp());
-//                writer.addMutation(m);
-//            }
-//        } finally {
-//            writer.close();
-//        }
+        BatchWriter writer = new MockBatchWriter(cb, tableName);
+        try {
+            for (Entry<Key, Value> next : this) {
+                Key k = next.getKey();
+                Mutation m = new Mutation(k.getRow());
+                m.putDelete(k.getColumnFamily(), k.getColumnQualifier(), new ColumnVisibility(k.getColumnVisibility()), k.getTimestamp());
+                writer.addMutation(m);
+            }
+        } catch (ConcurrentModificationException e) {
+            // ignore for now
+        } finally {
+            writer.close();
+        }
     }
 }
