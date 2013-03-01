@@ -18,27 +18,26 @@ package cloudbase.core.client.mock;
 
 import cloudbase.core.client.*;
 
+import java.util.Map;
+
 /**
  * Very simple MultiTableBatchWriter for mocks
  */
 public class MockMultiTableBatchWriter implements MultiTableBatchWriter {
 
-    private Connector connector;
-    private boolean closed = false;
-    private final long maxMemory;
-    private final long maxLatency;
-    private final int maxWriteThreads;
+    MockCloudbase cb = null;
+    Map<String, MockBatchWriter> bws = null;
 
-    public MockMultiTableBatchWriter(Connector connector, long maxMemory, long maxLatency, int maxWriteThreads) {
-        this.connector = connector;
-        this.maxMemory = maxMemory;
-        this.maxLatency = maxLatency;
-        this.maxWriteThreads = maxWriteThreads;
+    public MockMultiTableBatchWriter(MockCloudbase cb) {
+        this.cb = cb;
     }
 
     @Override
     public BatchWriter getBatchWriter(String table) throws CBException, CBSecurityException, TableNotFoundException {
-        return connector.createBatchWriter(table, maxMemory, maxLatency, maxWriteThreads);
+        if (!bws.containsKey(table)) {
+            bws.put(table, new MockBatchWriter(cb, table));
+        }
+        return bws.get(table);
     }
 
     @Override
@@ -47,11 +46,10 @@ public class MockMultiTableBatchWriter implements MultiTableBatchWriter {
 
     @Override
     public void close() throws MutationsRejectedException {
-        closed = true;
     }
 
     @Override
     public boolean isClosed() {
-        return closed;
+        throw new UnsupportedOperationException();
     }
 }

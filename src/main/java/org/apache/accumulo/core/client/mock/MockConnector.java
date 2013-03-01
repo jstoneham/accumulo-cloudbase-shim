@@ -16,40 +16,11 @@
  */
 package org.apache.accumulo.core.client.mock;
 
-import org.apache.accumulo.core.client.AccumuloException;
-import org.apache.accumulo.core.client.AccumuloSecurityException;
 import org.apache.accumulo.core.client.Connector;
-import com.texeltek.accumulocloudbaseshim.BatchDeleterShim;
-import org.apache.accumulo.core.client.*;
-import org.apache.accumulo.core.security.Authorizations;
 
 public class MockConnector extends Connector {
 
-    public final cloudbase.core.client.mock.MockConnector impl;
-    public final cloudbase.core.client.mock.MockCloudbase cb;
-
-    public MockConnector(String username) {
-        impl = new cloudbase.core.client.mock.MockConnectorShim(username, cb = new cloudbase.core.client.mock.MockCloudbase());
-    }
-
-    public MockConnector(MockInstance instance, String user, byte[] password) throws AccumuloException, AccumuloSecurityException {
-        super(instance, user, password);
-        impl = new cloudbase.core.client.mock.MockConnectorShim(user, cb = new cloudbase.core.client.mock.MockCloudbase());
-    }
-
     public MockConnector(cloudbase.core.client.mock.MockConnector impl) {
         super(impl);
-        this.impl = impl;
-        this.cb = null;
-    }
-
-    @Override
-    public BatchDeleter createBatchDeleter(String tableName, Authorizations authorizations, int numQueryThreads, long maxMemory, long maxLatency,
-                                           int maxWriteThreads) throws TableNotFoundException {
-        return new BatchDeleterShim(new cloudbase.core.client.mock.MockBatchDeleter(cb, tableName, authorizations.impl));
-    }
-
-    public String toString() {
-        return impl.toString();
     }
 }
