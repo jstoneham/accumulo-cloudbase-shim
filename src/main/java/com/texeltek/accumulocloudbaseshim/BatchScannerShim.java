@@ -25,7 +25,7 @@ import org.apache.commons.collections.iterators.TransformIterator;
 
 import java.util.*;
 
-public class BatchScannerShim extends ScannerShimBase implements BatchScanner {
+public class BatchScannerShim extends ScannerBaseShim implements BatchScanner {
     public final cloudbase.core.client.BatchScanner impl;
 
     public BatchScannerShim(cloudbase.core.client.BatchScanner impl) {

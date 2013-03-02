@@ -28,7 +28,7 @@ import org.apache.commons.collections.iterators.TransformIterator;
 
 import java.util.*;
 
-public class BatchDeleterShim extends ScannerShimBase implements BatchDeleter {
+public class BatchDeleterShim extends ScannerBaseShim implements BatchDeleter {
     public final cloudbase.core.client.BatchDeleter impl;
 
     public BatchDeleterShim(cloudbase.core.client.BatchDeleter impl) {

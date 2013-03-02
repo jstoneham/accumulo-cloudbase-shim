@@ -26,7 +26,7 @@ import org.apache.commons.collections.iterators.TransformIterator;
 import java.util.Iterator;
 import java.util.Map;
 
-public class ScannerShim extends ScannerShimBase implements Scanner {
+public class ScannerShim extends ScannerBaseShim implements Scanner {
     public final cloudbase.core.client.Scanner impl;
 
     public ScannerShim(cloudbase.core.client.Scanner impl) {

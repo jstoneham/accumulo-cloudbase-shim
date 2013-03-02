@@ -25,10 +25,10 @@ import org.apache.hadoop.io.Text;
 import java.io.IOException;
 import java.util.Map;
 
-public abstract class ScannerShimBase implements ScannerBase {
+public abstract class ScannerBaseShim implements ScannerBase {
     private final cloudbase.core.client.ScannerBase baseImpl;
 
-    public ScannerShimBase(cloudbase.core.client.ScannerBase baseImpl) {
+    public ScannerBaseShim(cloudbase.core.client.ScannerBase baseImpl) {
         this.baseImpl = baseImpl;
     }
 
