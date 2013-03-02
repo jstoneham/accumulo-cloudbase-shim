@@ -16,13 +16,9 @@
  */
 package com.texeltek.accumulocloudbaseshim;
 
-import cloudbase.core.iterators.FilteringIterator;
-import cloudbase.core.iterators.filter.Filter;
 import org.apache.accumulo.core.client.IteratorSetting;
 import org.apache.accumulo.core.client.ScannerBase;
 import org.apache.accumulo.core.iterators.SortedKeyIterator;
-import org.apache.accumulo.core.iterators.user.AgeOffFilter;
-import org.apache.accumulo.core.iterators.user.ColumnAgeOffFilter;
 import org.apache.accumulo.core.iterators.user.RegExFilter;
 import org.apache.hadoop.io.Text;
 
@@ -38,11 +34,7 @@ public abstract class ScannerShimBase implements ScannerBase {
 
     public void addScanIterator(IteratorSetting cfg) {
         try {
-            if (cfg.getIteratorClass().equals(AgeOffFilter.class.getName())) {
-                translateAgeOffFilter(cfg);
-            } else if (cfg.getIteratorClass().equals(ColumnAgeOffFilter.class.getName())) {
-                translateColumnAgeOffFilter(cfg);
-            } else if (cfg.getIteratorClass().equals(RegExFilter.class.getName())) {
+            if (cfg.getIteratorClass().equals(RegExFilter.class.getName())) {
                 translateRegExFilter(cfg);
             } else if (isCloudbaseFilter(cfg.getIteratorClass())) {
                 translateCloudbaseFilter(cfg);
@@ -54,17 +46,9 @@ public abstract class ScannerShimBase implements ScannerBase {
         }
     }
 
-    private void translateAgeOffFilter(IteratorSetting cfg) throws IOException {
+    protected void translateCloudbaseFilter(IteratorSetting cfg) throws IOException {
         baseImpl.setScanIterators(cfg.getPriority(), cloudbase.core.iterators.FilteringIterator.class.getName(), cfg.getName());
-        baseImpl.setScanIteratorOption(cfg.getName(), "0", cloudbase.core.iterators.filter.AgeOffFilter.class.getName());
-        for (Map.Entry<String, String> option : cfg.getOptions().entrySet()) {
-            baseImpl.setScanIteratorOption(cfg.getName(), "0." + option.getKey(), option.getValue());
-        }
-    }
-
-    private void translateColumnAgeOffFilter(IteratorSetting cfg) throws IOException {
-        baseImpl.setScanIterators(cfg.getPriority(), cloudbase.core.iterators.FilteringIterator.class.getName(), cfg.getName());
-        baseImpl.setScanIteratorOption(cfg.getName(), "0", cloudbase.core.iterators.filter.ColumnAgeOffFilter.class.getName());
+        baseImpl.setScanIteratorOption(cfg.getName(), "0", cfg.getIteratorClass());
         for (Map.Entry<String, String> option : cfg.getOptions().entrySet()) {
             baseImpl.setScanIteratorOption(cfg.getName(), "0." + option.getKey(), option.getValue());
         }
@@ -100,21 +84,10 @@ public abstract class ScannerShimBase implements ScannerBase {
         }
     }
 
-    protected void translateCloudbaseFilter(IteratorSetting cfg) throws IOException {
-        String iteratorClass_str = cfg.getIteratorClass();
-        String name = cfg.getName();
-        baseImpl.setScanIterators(cfg.getPriority(), FilteringIterator.class.getName(), name);
-        baseImpl.setScanIteratorOption(name, "0", iteratorClass_str);
-        Map<String, String> options = cfg.getOptions();
-        for (Map.Entry<String, String> option : options.entrySet()) {
-            baseImpl.setScanIteratorOption(name, "0." + option.getKey(), option.getValue());
-        }
-    }
-
     protected boolean isCloudbaseFilter(String iteratorClass_str) {
         try {
             Class<?> iteratorClass = Class.forName(iteratorClass_str);
-            return Filter.class.isAssignableFrom(iteratorClass);
+            return cloudbase.core.iterators.filter.Filter.class.isAssignableFrom(iteratorClass);
         } catch (ClassNotFoundException e) {
             return false;
         }
