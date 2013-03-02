@@ -48,7 +48,7 @@ public abstract class ScannerShimBase implements ScannerBase {
 
     protected void translateCloudbaseFilter(IteratorSetting cfg) throws IOException {
         baseImpl.setScanIterators(cfg.getPriority(), cloudbase.core.iterators.FilteringIterator.class.getName(), cfg.getName());
-        baseImpl.setScanIteratorOption(cfg.getName(), "0", cfg.getIteratorClass());
+        baseImpl.setScanIteratorOption(cfg.getName(), "0", convertToCloudbaseFilterPackage(cfg.getIteratorClass()));
         for (Map.Entry<String, String> option : cfg.getOptions().entrySet()) {
             baseImpl.setScanIteratorOption(cfg.getName(), "0." + option.getKey(), option.getValue());
         }
@@ -86,11 +86,15 @@ public abstract class ScannerShimBase implements ScannerBase {
 
     protected boolean isCloudbaseFilter(String iteratorClass_str) {
         try {
-            Class<?> iteratorClass = Class.forName(iteratorClass_str);
+            Class<?> iteratorClass = Class.forName(convertToCloudbaseFilterPackage(iteratorClass_str));
             return cloudbase.core.iterators.filter.Filter.class.isAssignableFrom(iteratorClass);
         } catch (ClassNotFoundException e) {
             return false;
         }
+    }
+
+    private String convertToCloudbaseFilterPackage(String className) {
+        return className.replace("org.apache.accumulo.core.iterators.user", "cloudbase.core.iterators.filter");
     }
 
     public void removeScanIterator(String iteratorName) {
