@@ -79,8 +79,9 @@ public abstract class ScannerBaseShim implements ScannerBase {
     }
 
     private void translateIteratorsPackage(IteratorSetting cfg) {
-        if (cfg.getIteratorClass().equals(SortedKeyIterator.class.getName())) {
-            cfg.setIteratorClass(cloudbase.core.iterators.SortedKeyIterator.class.getName());
+        final String prefix = "org.apache.accumulo.core.iterators";
+        if (cfg.getIteratorClass().startsWith(prefix)) {
+            cfg.setIteratorClass("cloudbase.core.iterators" + cfg.getIteratorClass().substring(prefix.length()));
         }
     }
 
