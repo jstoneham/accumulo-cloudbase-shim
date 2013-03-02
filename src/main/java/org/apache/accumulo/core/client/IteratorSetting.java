@@ -16,9 +16,6 @@
  */
 package org.apache.accumulo.core.client;
 
-import org.apache.accumulo.core.data.Key;
-import org.apache.accumulo.core.data.Value;
-import org.apache.accumulo.core.iterators.SortedKeyValueIterator;
 import org.apache.accumulo.core.util.ArgumentChecker;
 import org.apache.accumulo.core.util.Pair;
 import org.apache.hadoop.io.Text;
@@ -140,7 +137,7 @@ public class IteratorSetting {
      * @param priority      the priority for the iterator (see {@link #setPriority(int)})
      * @param iteratorClass the class for the iterator
      */
-    public IteratorSetting(int priority, Class<? extends SortedKeyValueIterator<Key, Value>> iteratorClass) {
+    public IteratorSetting(int priority, Class iteratorClass) {
         this(priority, iteratorClass.getSimpleName(), iteratorClass.getName());
     }
 
@@ -152,7 +149,7 @@ public class IteratorSetting {
      * @param iteratorClass the class for the iterator
      * @param properties    any properties for the iterator
      */
-    public IteratorSetting(int priority, Class<? extends SortedKeyValueIterator<Key, Value>> iteratorClass, Map<String, String> properties) {
+    public IteratorSetting(int priority, Class iteratorClass, Map<String, String> properties) {
         this(priority, iteratorClass.getSimpleName(), iteratorClass.getName(), properties);
     }
 
@@ -163,7 +160,7 @@ public class IteratorSetting {
      * @param name          the distinguishing name for the iterator
      * @param iteratorClass the class for the iterator
      */
-    public IteratorSetting(int priority, String name, Class<? extends SortedKeyValueIterator<Key, Value>> iteratorClass) {
+    public IteratorSetting(int priority, String name, Class iteratorClass) {
         this(priority, name, iteratorClass.getName());
     }
 
