@@ -169,11 +169,19 @@ public class TableOperationsShim implements TableOperations {
 
     public void setProperty(String tableName, String property, String value) throws AccumuloException, AccumuloSecurityException {
         try {
-            impl.setProperty(tableName, property, value);
+            impl.setProperty(tableName, property, translateIteratorClassName(property, value));
         } catch (CBException e) {
             throw new AccumuloException(e);
         } catch (CBSecurityException e) {
             throw new AccumuloSecurityException(e);
+        }
+    }
+
+    private String translateIteratorClassName(String property, String value) {
+        if (property.startsWith(Property.TABLE_ITERATOR_PREFIX.getKey())) {
+            return value.replace("org.apache.accumulo.core.iterators.user", "cloudbase.core.iterators");
+        } else {
+            return value;
         }
     }
 
