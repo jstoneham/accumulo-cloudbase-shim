@@ -18,8 +18,6 @@ package com.texeltek.accumulocloudbaseshim;
 
 import org.apache.accumulo.core.client.IteratorSetting;
 import org.apache.accumulo.core.client.ScannerBase;
-import org.apache.accumulo.core.iterators.SortedKeyIterator;
-import org.apache.accumulo.core.iterators.user.RegExFilter;
 import org.apache.hadoop.io.Text;
 
 import java.io.IOException;
@@ -34,68 +32,14 @@ public abstract class ScannerBaseShim implements ScannerBase {
 
     public void addScanIterator(IteratorSetting cfg) {
         try {
-            if (cfg.getIteratorClass().equals(RegExFilter.class.getName())) {
-                translateRegExFilter(cfg);
-            } else if (isCloudbaseFilter(cfg.getIteratorClass())) {
-                translateCloudbaseFilter(cfg);
-            } else {
-                translateCloudbaseIterator(cfg);
+            IteratorSetting translated = IteratorTranslation.translate(cfg);
+            baseImpl.setScanIterators(translated.getPriority(), translated.getIteratorClass(), translated.getName());
+            for (Map.Entry<String, String> option : translated.getOptions().entrySet()) {
+                baseImpl.setScanIteratorOption(translated.getName(), option.getKey(), option.getValue());
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    protected void translateCloudbaseFilter(IteratorSetting cfg) throws IOException {
-        baseImpl.setScanIterators(cfg.getPriority(), cloudbase.core.iterators.FilteringIterator.class.getName(), cfg.getName());
-        baseImpl.setScanIteratorOption(cfg.getName(), "0", convertToCloudbaseFilterPackage(cfg.getIteratorClass()));
-        for (Map.Entry<String, String> option : cfg.getOptions().entrySet()) {
-            baseImpl.setScanIteratorOption(cfg.getName(), "0." + option.getKey(), option.getValue());
-        }
-    }
-
-    private void translateRegExFilter(IteratorSetting cfg) throws IOException {
-        baseImpl.setScanIterators(cfg.getPriority(), cloudbase.core.iterators.RegExIterator.class.getName(), cfg.getName());
-        for (Map.Entry<String, String> option : cfg.getOptions().entrySet()) {
-            baseImpl.setScanIteratorOption(cfg.getName(), option.getKey(), option.getValue());
-        }
-    }
-
-    private void translateCloudbaseIterator(IteratorSetting cfg) throws IOException {
-        translateIteratorsUserPackage(cfg);
-        translateIteratorsPackage(cfg);
-
-        baseImpl.setScanIterators(cfg.getPriority(), cfg.getIteratorClass(), cfg.getName());
-        for (Map.Entry<String, String> option : cfg.getOptions().entrySet()) {
-            baseImpl.setScanIteratorOption(cfg.getName(), option.getKey(), option.getValue());
-        }
-    }
-
-    private void translateIteratorsUserPackage(IteratorSetting cfg) {
-        final String prefix = "org.apache.accumulo.core.iterators.user";
-        if (cfg.getIteratorClass().startsWith(prefix)) {
-            cfg.setIteratorClass("cloudbase.core.iterators" + cfg.getIteratorClass().substring(prefix.length()));
-        }
-    }
-
-    private void translateIteratorsPackage(IteratorSetting cfg) {
-        final String prefix = "org.apache.accumulo.core.iterators";
-        if (cfg.getIteratorClass().startsWith(prefix)) {
-            cfg.setIteratorClass("cloudbase.core.iterators" + cfg.getIteratorClass().substring(prefix.length()));
-        }
-    }
-
-    protected boolean isCloudbaseFilter(String iteratorClass_str) {
-        try {
-            Class<?> iteratorClass = Class.forName(convertToCloudbaseFilterPackage(iteratorClass_str));
-            return cloudbase.core.iterators.filter.Filter.class.isAssignableFrom(iteratorClass);
-        } catch (ClassNotFoundException e) {
-            return false;
-        }
-    }
-
-    private String convertToCloudbaseFilterPackage(String className) {
-        return className.replace("org.apache.accumulo.core.iterators.user", "cloudbase.core.iterators.filter");
     }
 
     public void removeScanIterator(String iteratorName) {

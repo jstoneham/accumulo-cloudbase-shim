@@ -18,6 +18,7 @@ package org.apache.accumulo.core.client.mapreduce;
 
 import cloudbase.core.client.mapreduce.CloudbaseInputFormatShim;
 import com.texeltek.accumulocloudbaseshim.InstanceShim;
+import com.texeltek.accumulocloudbaseshim.IteratorTranslation;
 import com.texeltek.accumulocloudbaseshim.JobContextShim;
 import com.texeltek.accumulocloudbaseshim.TabletLocatorShim;
 import org.apache.accumulo.core.client.Instance;
@@ -121,7 +122,7 @@ public abstract class InputFormatBase<K, V> extends InputFormat<K, V> {
     }
 
     @SuppressWarnings("unchecked")
-    public static void fetchColumns(JobContext job, Collection<Pair<Text,Text>> columnFamilyColumnQualifierPairs) {
+    public static void fetchColumns(JobContext job, Collection<Pair<Text, Text>> columnFamilyColumnQualifierPairs) {
         CloudbaseInputFormatShim.fetchColumns(job,
                 CollectionUtils.collect(columnFamilyColumnQualifierPairs,
                         new Transformer() {
@@ -145,9 +146,11 @@ public abstract class InputFormatBase<K, V> extends InputFormat<K, V> {
     }
 
     public static void addIterator(JobContext job, IteratorSetting cfg) {
-        CloudbaseInputFormatShim.setIterator(job, cfg.getPriority(), cfg.getIteratorClass(), cfg.getName());
-        for (Map.Entry<String, String> option : cfg.getOptions().entrySet()) {
-            CloudbaseInputFormatShim.setIteratorOption(job, cfg.getName(), option.getKey(), option.getValue());
+        IteratorSetting translated = IteratorTranslation.translate(cfg);
+        CloudbaseInputFormatShim.setIterator(job, translated.getPriority(),
+                translated.getIteratorClass(), translated.getName());
+        for (Map.Entry<String, String> option : translated.getOptions().entrySet()) {
+            CloudbaseInputFormatShim.setIteratorOption(job, translated.getName(), option.getKey(), option.getValue());
         }
     }
 
@@ -156,7 +159,9 @@ public abstract class InputFormatBase<K, V> extends InputFormat<K, V> {
     }
 
     public static void setIterator(JobContext job, int priority, String iteratorClass, String iteratorName) {
-        CloudbaseInputFormatShim.setIterator(job, priority, iteratorClass, iteratorName);
+        IteratorSetting translated = IteratorTranslation.translate(new IteratorSetting(priority, iteratorName, iteratorClass));
+        CloudbaseInputFormatShim.setIterator(job, translated.getPriority(),
+                translated.getIteratorClass(), translated.getName());
     }
 
     public static void setIteratorOption(JobContext job, String iteratorName, String key, String value) {
