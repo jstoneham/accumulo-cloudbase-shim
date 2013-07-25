@@ -169,19 +169,11 @@ public class TableOperationsShim implements TableOperations {
 
     public void setProperty(String tableName, String property, String value) throws AccumuloException, AccumuloSecurityException {
         try {
-            impl.setProperty(tableName, property, translateIteratorClassName(property, value));
+            impl.setProperty(tableName, property, IteratorTranslation.translateProperty(property, value));
         } catch (CBException e) {
             throw new AccumuloException(e);
         } catch (CBSecurityException e) {
             throw new AccumuloSecurityException(e);
-        }
-    }
-
-    private String translateIteratorClassName(String property, String value) {
-        if (property.startsWith(Property.TABLE_ITERATOR_PREFIX.getKey())) {
-            return value.replace("org.apache.accumulo.core.iterators.user", "cloudbase.core.iterators");
-        } else {
-            return value;
         }
     }
 
@@ -197,7 +189,12 @@ public class TableOperationsShim implements TableOperations {
 
     public Iterable<Map.Entry<String, String>> getProperties(String tableName) throws AccumuloException, TableNotFoundException {
         try {
-            return impl.getProperties(tableName);
+            Iterable<Map.Entry<String, String>> untranslated = impl.getProperties(tableName);
+            Map<String, String> translated = new LinkedHashMap<String, String>();
+            for (Map.Entry<String, String> entry : untranslated) {
+                translated.put(entry.getKey(), IteratorTranslation.untranslateProperty(entry.getKey(), entry.getValue()));
+            }
+            return translated.entrySet();
         } catch (cloudbase.core.client.TableNotFoundException e) {
             throw new TableNotFoundException(e);
         }

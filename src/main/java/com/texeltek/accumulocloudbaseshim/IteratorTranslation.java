@@ -1,6 +1,6 @@
 package com.texeltek.accumulocloudbaseshim;
 
-
+import cloudbase.core.conf.Property;
 import org.apache.accumulo.core.client.IteratorSetting;
 import org.apache.accumulo.core.iterators.user.RegExFilter;
 
@@ -23,6 +23,22 @@ public final class IteratorTranslation {
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public static String translateProperty(String name, String value) {
+        if (name.startsWith(Property.TABLE_ITERATOR_PREFIX.getKey())) {
+            return value.replace("org.apache.accumulo.core.iterators.user", "cloudbase.core.iterators");
+        } else {
+            return value;
+        }
+    }
+
+    public static String untranslateProperty(String name, String value) {
+        if (name.startsWith(Property.TABLE_ITERATOR_PREFIX.getKey())) {
+            return value.replace("cloudbase.core.iterators", "org.apache.accumulo.core.iterators.user");
+        } else {
+            return value;
         }
     }
 
